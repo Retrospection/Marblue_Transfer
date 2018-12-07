@@ -131,15 +131,15 @@
 
             onResetBtnClicked() {
                 this.queryOptions.qqNumber = ''
-                this.queryOptions.startDate = null
-                this.queryOptions.endDate = null
+                this.queryOptions.startDate = ''
+                this.queryOptions.endDate = ''
             },
 
             needQueryQQNumber() {
-                return this.queryOptions.qqNumber != '' && /[0-9]{5,}/g.test(this.queryOptions.qqNumber)
+                return this.queryOptions.qqNumber !== '' && /[0-9]{5,}/g.test(this.queryOptions.qqNumber)
             },
             needQueryByDate() {
-                return this.queryOptions.startDate != '' && this.queryOptions.endDate != ''
+                return this.queryOptions.startDate !== '' && this.queryOptions.endDate !== ''
             },
 
             getGroupName(groupId) {
