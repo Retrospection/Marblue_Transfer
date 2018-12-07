@@ -59,9 +59,6 @@ def addRecord():
 @app.route('/query', methods=['POST'])
 def query():
     queryOptions = request.get_json()
-    print(queryOptions)
-    print(date.fromtimestamp(queryOptions['start_date'] / 1000))
-    print(date.fromtimestamp(queryOptions['end_date'] / 1000))
     if ('qq_number' not in queryOptions and
         'start_date' not in queryOptions and
         'end_date' not in queryOptions):
