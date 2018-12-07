@@ -55,7 +55,7 @@
         methods: {
             onSubmitBtnClicked () {
 
-                const url = 'http://localhost:3535/addRecord'
+                const url = 'http://localhost/api/addRecord'
                 const qqNumber = this.formData.qqNumber
                 const fromGroup = this.formData.fromGroup
                 const toGroup = this.formData.toGroup
