@@ -10,23 +10,14 @@
             </Header>
             <Content>
                 <Card class="content-container">
+                    <Alert style="line-height: 2rem; padding: 40px 20px">
+                        当前查询支持两种功能：<br>
+                        1. 根据指定QQ号查询换群记录 <br>
+                        2. 根据指定起止日期查询，起始日期必须早于结束日期 (查询区间左闭右开, 如要查询2018年12月7日当天，则起始日期为12月7日，结束日期为12月8日)
+                    </Alert>
                     <Form ref="formCustom" :model="queryOptions" :label-width="120" style="max-width: 600px">
                         <FormItem label="QQ号">
                             <Input v-model="queryOptions.qqNumber"/>
-                        </FormItem>
-                        <FormItem label="现在所在的群">
-                            <Select v-model="queryOptions.groupList">
-                                <Option v-for="group in queryOptions.groupList" :value="group.value" :key="group.value">
-                                    {{ group.label }}
-                                </Option>
-                            </Select>
-                        </FormItem>
-                        <FormItem label="希望换到的群">
-                            <Select v-model="queryOptions.toGroup">
-                                <Option v-for="group in queryOptions.groupList" :value="group.value" :key="group.value">
-                                    {{ group.label }}
-                                </Option>
-                            </Select>
                         </FormItem>
                         <FormItem label="起始日期">
                             <DatePicker v-model="queryOptions.startDate" type="date" placeholder="选择希望查询记录的起始日期" confirm style="width: 300px"></DatePicker>
@@ -40,7 +31,7 @@
                         </FormItem>
                     </Form>
                     <div class="content">
-                        <Table :columns="tableColumn" :data="tableData"></Table>
+                        <Table :columns="tableColumn" :data="tableData" height="400"></Table>
                     </div>
                 </Card>
             </Content>
@@ -49,6 +40,9 @@
 </template>
 
 <script>
+
+    import { query } from "../service/api";
+
     export default {
         name: 'query',
 
@@ -72,13 +66,15 @@
                         key: 'date'
                     }
                 ],
-                tableData: [
-                    {
-                        qqNumber: '371373446',
-                        fromGroup: '羊毛厂',
-                        toGroup: '冰工厂',
-                        date: '2018-12-02'
-                    }
+                tableData: [],
+                queryData: [
+                    [
+                        1,
+                        '371373446',
+                        2,
+                        1,
+                        '2018-12-02'
+                    ]
                 ],
                 queryOptions: {
                     groupList: [
@@ -98,9 +94,6 @@
                     qqNumber: '',
                     startDate: null,
                     endDate: null,
-                    fromGroup: -1,
-                    toGroup: -1,
-
                 }
             }
         },
@@ -108,10 +101,56 @@
         methods: {
             onSubmitBtnClicked() {
 
+                const url = 'http://localhost:3535/query'
+                let ret
+                if (this.needQueryQQNumber() && this.needQueryByDate()) {
+                    ret = query(url, this.queryOptions.qqNumber,
+                                    this.queryOptions.startDate.getTime(),
+                                    this.queryOptions.endDate.getTime())
+
+                } else if (this.needQueryQQNumber() && !this.needQueryByDate()) {
+                    ret = query(url, this.queryOptions.qqNumber, null, null)
+                } else if (!this.needQueryQQNumber() && this.needQueryByDate()) {
+                    ret = query(url, null, this.queryOptions.startDate.getTime(),
+                                            this.queryOptions.endDate.getTime())
+                } else {
+                    ret = query(url, null, null, null)
+                }
+                ret.then(data => {
+
+                    this.tableData = data.data.map(record => {
+                        return {
+                            qqNumber: record[1],
+                            fromGroup: this.getGroupName(record[2]),
+                            toGroup: this.getGroupName(record[3]),
+                            date: record[4]
+                        }
+                    })
+                })
             },
 
             onResetBtnClicked() {
+                this.queryOptions.qqNumber = ''
+                this.queryOptions.startDate = null
+                this.queryOptions.endDate = null
+            },
 
+            needQueryQQNumber() {
+                return this.queryOptions.qqNumber != '' && /[0-9]{5,}/g.test(this.queryOptions.qqNumber)
+            },
+            needQueryByDate() {
+                return this.queryOptions.startDate != null && this.queryOptions.endDate != null
+            },
+
+            getGroupName(groupId) {
+                switch (groupId) {
+                    case 1:
+                        return '冰工厂'
+                    case 2:
+                        return '羊毛厂'
+                    case 3:
+                        return '咖啡厂'
+                }
             }
 
         }

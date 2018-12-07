@@ -1,8 +1,12 @@
 <script>
+
+    import { addRecord } from '../service/api'
+
     export default {
         name: 'add',
         data() {
             return {
+                isModalShow: false,
                 formData: {
                     groupList: [
                         {
@@ -24,13 +28,69 @@
                 }
             }
         },
+        computed: {
+            fromGroupName() {
+                switch (this.formData.fromGroup) {
+                    case 1:
+                        return '冰工厂'
+                    case 2:
+                        return '羊毛厂'
+                    case 3:
+                        return '咖啡厂'
+                }
+            },
+
+            toGroupName() {
+                switch (this.formData.toGroup) {
+                    case 1:
+                        return '冰工厂'
+                    case 2:
+                        return '羊毛厂'
+                    case 3:
+                        return '咖啡厂'
+                }
+            },
+
+        },
         methods: {
             onSubmitBtnClicked () {
 
+                const url = 'http://localhost:3535/addRecord'
+                const qqNumber = this.formData.qqNumber
+                const fromGroup = this.formData.fromGroup
+                const toGroup = this.formData.toGroup
+
+                if (qqNumber === '' || !(/[0-9]{5,}/g.test(qqNumber))) {
+                    this.$Message.error('QQ号格式不对')
+                    return
+                }
+                if (fromGroup === -1) {
+                    this.$Message.error('应选择现在所在的群')
+                    return
+                }
+                if (toGroup === -1) {
+                    this.$Message.error('应选择希望换到的群')
+                    return
+                }
+                if (fromGroup === toGroup) {
+                    this.$Message.error('现在所在的群和希望换到的群应当不同')
+                    return
+                }
+
+                const ret = addRecord(url, this.formData.qqNumber, this.formData.fromGroup, this.formData.toGroup)
+                ret.then(data => {
+                    if (data.code === 0) {
+                        this.$Message.success(data.msg)
+                    } else {
+                        this.$Message.error(data.msg)
+                    }
+                })
             },
 
             onResetBtnClicked () {
-
+                this.formData.qqNumber = ''
+                this.formData.fromGroup = -1
+                this.formData.toGroup = -1
             }
 
         }
@@ -66,13 +126,19 @@
                                 </Select>
                             </FormItem>
                             <FormItem>
-                                <Button type="primary" @click="onSubmitBtnClicked">提交</Button>
+                                <Button type="primary" @click="isModalShow = true">提交</Button>
                                 <Button @click="onResetBtnClicked" style="margin-left: 8px">重置</Button>
                             </FormItem>
                         </Form>
                     </div>
                 </Card>
             </Content>
+            <Modal v-model="isModalShow" title="提交确认" @on-ok="onSubmitBtnClicked">
+                <h1>请确认待添加的记录</h1>
+                <p style="line-height: 2rem">QQ号：{{ this.formData.qqNumber }}</p>
+                <p style="line-height: 2rem">现在所在的群： {{ this.fromGroupName }}</p>
+                <p style="line-height: 2rem">希望换到的群： {{ this.toGroupName }}</p>
+            </Modal>
         </Layout>
     </div>
 </template>
