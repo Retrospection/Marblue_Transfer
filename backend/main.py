@@ -22,6 +22,7 @@ app = Flask(__name__)
 repository = Repository('./data/db.sqlite')
 CORS(app, supports_credentials=True)
 
+
 @app.route('/addRecord', methods=['POST', 'OPTIONS'])
 def addRecord():
     if request.method == 'OPTIONS':
