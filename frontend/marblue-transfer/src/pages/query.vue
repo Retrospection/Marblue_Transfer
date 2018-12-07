@@ -101,7 +101,7 @@
         methods: {
             onSubmitBtnClicked() {
 
-                const url = 'http://localhost/api/query'
+                const url = 'http://127.0.0.1/api/query'
                 let ret
                 if (this.needQueryQQNumber() && this.needQueryByDate()) {
                     ret = query(url, this.queryOptions.qqNumber,
