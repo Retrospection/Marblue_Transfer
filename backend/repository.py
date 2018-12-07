@@ -12,11 +12,11 @@ class Repository(object):
 
     def __init__(self, dbFilename):
         self.dbFilename = dbFilename
-        self.cursor = sqlite3.connect(self.dbFilename)
+        self.cursor = sqlite3.connect(self.dbFilename, check_same_thread=False)
 
     @staticmethod
     def __convertTimestampRecordToDatetime(record):
-        return [(record[0], record[1], record[2], record[3], datetime.datetime.fromtimestamp(record[4]))]
+        return (record[0], record[1], record[2], record[3], datetime.datetime.fromtimestamp(record[4]).strftime('%Y-%m-%d %H:%M:%S'))
 
     def addRecord(self, qqNumber, fromGroup, toGroup):
 
@@ -28,6 +28,14 @@ class Repository(object):
 
         self.cursor.execute(__ADD_RECORD_SQL)
         self.cursor.commit()
+
+    def getAll(self):
+        __GET_ALL_SQL = """
+            SELECT * FROM trans_records
+        """
+
+        return list(map(Repository.__convertTimestampRecordToDatetime,
+                        self.cursor.execute(__GET_ALL_SQL)))
 
     def findByQQNumber(self, qqNumber):
 
