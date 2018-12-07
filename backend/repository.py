@@ -54,6 +54,14 @@ class Repository(object):
         return list(map(Repository.__convertTimestampRecordToDatetime,
                         self.cursor.execute(__FIND_BETWEEN_DATE_SQL).fetchall()))
 
+    def findByQQNumberBetweenDate(self, qqNumber, startDate, endDate):
+        __FIND_BY_QQNUMBER_BETWEEN_DATE_SQL = """
+            SELECT * FROM trans_records WHERE qq_number = {} AND date > {} AND  date < {}
+        """.format(qqNumber, startDate, endDate)
+
+        return list(map(Repository.__convertTimestampRecordToDatetime,
+                        self.cursor.execute(__FIND_BY_QQNUMBER_BETWEEN_DATE_SQL).fetchall()))
+
     def findByFromGroup(self, fromGroup):
 
         __FIND_BY_FROM_GROUP_SQL = """

@@ -4,7 +4,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 
-from backend.error_code import (
+from error_code import (
     QQ_NUMBER_NOT_EXIST,
     FROM_GROUP_NOT_EXIST,
     TO_GROUP_NOT_EXIST
