@@ -92,15 +92,15 @@
                         }
                     ],
                     qqNumber: '',
-                    startDate: null,
-                    endDate: null,
+                    startDate: '',
+                    endDate: '',
                 }
             }
         },
 
         methods: {
             onSubmitBtnClicked() {
-
+                console.log(this.queryOptions)
                 const url = 'http://212.64.12.38/api/query'
                 let ret
                 if (this.needQueryQQNumber() && this.needQueryByDate()) {
@@ -139,7 +139,7 @@
                 return this.queryOptions.qqNumber != '' && /[0-9]{5,}/g.test(this.queryOptions.qqNumber)
             },
             needQueryByDate() {
-                return this.queryOptions.startDate != null && this.queryOptions.endDate != null
+                return this.queryOptions.startDate != '' && this.queryOptions.endDate != ''
             },
 
             getGroupName(groupId) {
